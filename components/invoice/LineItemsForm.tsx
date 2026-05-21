@@ -18,7 +18,7 @@ export function LineItemsForm() {
     <div className="space-y-3">
       <h3 className="font-semibold text-sm uppercase tracking-wide text-muted-foreground">Line Items</h3>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto -mx-1 px-1">
         <table className="w-full text-sm">
           <thead>
             <tr className="text-muted-foreground text-xs border-b">

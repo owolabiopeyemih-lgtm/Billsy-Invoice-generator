@@ -7,12 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { useInvoice } from "./InvoiceContext";
 import { deleteInvoice } from "@/lib/storage";
 import {
-  Download, Mail, Link2, Printer, Trash2, Check,
-  Share2, Loader2, AlertCircle, MessageCircle, Copy, ImageIcon, Save,
+  Download, Link2, Mail, Printer, Trash2, Check,
+  Share2, Loader2, AlertCircle, MessageCircle, Copy, ImageIcon, Save, MoreHorizontal,
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 
 interface Props {
@@ -297,63 +301,94 @@ export function InvoiceActions({ offscreenRef }: Props) {
     }
   }
 
+  function handleSave() {
+    save();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  }
+
   return (
     <>
-      <div className="flex items-center gap-2 flex-wrap">
-        {isDirty && (
-          <Badge variant="outline" className="text-amber-600 border-amber-300 bg-amber-50">
-            Unsaved changes
-          </Badge>
-        )}
+      <div className="flex items-center gap-2">
+        {/* Errors */}
         {(saveError || pdfError) && (
-          <span className="flex items-center gap-1 text-xs text-destructive max-w-xs truncate">
-            <AlertCircle size={13} className="shrink-0" />
+          <span className="hidden sm:flex items-center gap-1 text-xs text-destructive max-w-[180px] truncate">
+            <AlertCircle size={12} className="shrink-0" />
             {saveError ?? pdfError}
           </span>
         )}
 
-        <Button
-          size="sm"
-          onClick={() => {
-            save();
-            setSaved(true);
-            setTimeout(() => setSaved(false), 2000);
-          }}
-          className="gap-1.5"
-        >
+        {/* Save — always visible */}
+        <Button size="sm" onClick={handleSave} className="gap-1.5">
           {saved ? <Check size={14} /> : <Save size={14} />}
-          {saved ? "Saved!" : "Save"}
+          <span>{saved ? "Saved!" : "Save"}</span>
         </Button>
 
-        <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={anyLoading} className="gap-1.5">
-          {pdfLoading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
-          Download PDF
-        </Button>
+        {/* Desktop actions — hidden on mobile */}
+        <div className="hidden md:flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={anyLoading} className="gap-1.5">
+            {pdfLoading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+            Download PDF
+          </Button>
 
-        <Button variant="outline" size="sm" onClick={handleCopyImage} disabled={anyLoading} className="gap-1.5">
-          {imgLoading ? <Loader2 size={14} className="animate-spin" />
-            : imageCopied ? <Check size={14} className="text-green-600" />
-            : <Copy size={14} />}
-          {imageCopied ? "Copied!" : "Copy Image"}
-        </Button>
+          <Button variant="outline" size="sm" onClick={handleCopyImage} disabled={anyLoading} className="gap-1.5">
+            {imgLoading ? <Loader2 size={14} className="animate-spin" />
+              : imageCopied ? <Check size={14} className="text-green-600" />
+              : <Copy size={14} />}
+            {imageCopied ? "Copied!" : "Copy Image"}
+          </Button>
 
-        <Button variant="outline" size="sm" onClick={handleSharePDF} disabled={anyLoading} className="gap-1.5">
-          {pdfLoading ? <Loader2 size={14} className="animate-spin" /> : <Share2 size={14} />}
-          Share
-        </Button>
+          <Button variant="outline" size="sm" onClick={handleSharePDF} disabled={anyLoading} className="gap-1.5">
+            {anyLoading ? <Loader2 size={14} className="animate-spin" /> : <Share2 size={14} />}
+            Share
+          </Button>
 
-        <Button variant="outline" size="sm" onClick={handlePrint} className="gap-1.5">
-          <Printer size={14} /> Print
-        </Button>
+          <Button variant="outline" size="sm" onClick={handlePrint} className="gap-1.5">
+            <Printer size={14} /> Print
+          </Button>
 
-        <Button variant="outline" size="sm" onClick={() => { handleCopyLink(); setLinkOpen(true); }} className="gap-1.5">
-          {copied ? <Check size={14} /> : <Link2 size={14} />}
-          Copy link
-        </Button>
+          <Button variant="outline" size="sm" onClick={() => { handleCopyLink(); setLinkOpen(true); }} className="gap-1.5">
+            {copied ? <Check size={14} /> : <Link2 size={14} />}
+            Copy link
+          </Button>
 
-        <Button variant="ghost" size="sm" onClick={handleDelete} className="text-destructive hover:text-destructive">
-          <Trash2 size={14} />
-        </Button>
+          <Button variant="ghost" size="sm" onClick={handleDelete} className="text-destructive hover:text-destructive">
+            <Trash2 size={14} />
+          </Button>
+        </div>
+
+        {/* Mobile hamburger — visible below md */}
+        <div className="md:hidden">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              disabled={anyLoading}
+              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-2.5 py-1.5 text-sm shadow-sm hover:bg-accent disabled:opacity-50"
+            >
+              {anyLoading ? <Loader2 size={15} className="animate-spin" /> : <MoreHorizontal size={15} />}
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuItem onClick={handleDownloadPDF} className="gap-2">
+                <Download size={14} /> Download PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleCopyImage} className="gap-2">
+                <Copy size={14} /> {imageCopied ? "Image Copied!" : "Copy as Image"}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleSharePDF} className="gap-2">
+                <Share2 size={14} /> Share PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handlePrint} className="gap-2">
+                <Printer size={14} /> Print
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { handleCopyLink(); setLinkOpen(true); }} className="gap-2">
+                <Link2 size={14} /> Copy link
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleDelete} className="gap-2 text-destructive focus:text-destructive">
+                <Trash2 size={14} /> Delete Invoice
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* ── Share dialog ──────────────────────────────────────────────────── */}

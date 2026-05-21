@@ -93,23 +93,25 @@ export function InvoiceList() {
               <div
                 key={inv.id}
                 onClick={() => router.push(`/invoice/${inv.id}`)}
-                className="flex items-center gap-4 px-4 py-3.5 bg-white hover:bg-muted/40 cursor-pointer transition-colors group"
+                className="flex items-center gap-3 px-3 sm:px-4 py-3 sm:py-3.5 bg-white hover:bg-muted/40 cursor-pointer transition-colors group"
               >
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-mono text-sm font-medium">{inv.invoiceNumber}</span>
                     <Badge variant={STATUS_VARIANT[inv.status]} className="capitalize text-xs">{inv.status}</Badge>
-                    {inv.isRecurring && <Badge variant="outline" className="text-xs">Recurring</Badge>}
+                    {inv.isRecurring && <Badge variant="outline" className="text-xs hidden sm:inline-flex">Recurring</Badge>}
                   </div>
-                  <div className="text-sm text-muted-foreground truncate mt-0.5">
-                    {inv.client.name || "No client"} · Due {safeFmt(inv.dueDate)}
+                  <div className="text-xs sm:text-sm text-muted-foreground truncate mt-0.5">
+                    {inv.client.name || "No client"}
+                    <span className="hidden sm:inline"> · Due {safeFmt(inv.dueDate)}</span>
+                    <span className="sm:hidden"> · {safeFmt(inv.dueDate)}</span>
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="font-semibold tabular-nums">
+                  <div className="font-semibold tabular-nums text-sm">
                     {formatCurrency(grand, inv.settings.currency)}
                   </div>
-                  <div className="text-xs text-muted-foreground">{safeFmt(inv.issueDate)}</div>
+                  <div className="text-xs text-muted-foreground hidden sm:block">{safeFmt(inv.issueDate)}</div>
                 </div>
                 <Button
                   variant="ghost"
