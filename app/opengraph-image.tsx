@@ -1,6 +1,9 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+// Statically generated at build time — served as a CDN-cached asset.
+// Do NOT add `runtime = "edge"` here; that turns it into a dynamic
+// function with cold starts, which delays social-media crawlers.
+export const dynamic = "force-static";
 export const alt = "Billsy — Free Invoice Generator";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
