@@ -8,7 +8,7 @@ import { useInvoice } from "./InvoiceContext";
 import { deleteInvoice } from "@/lib/storage";
 import {
   Download, Mail, Link2, Printer, Trash2, Check,
-  Share2, Loader2, AlertCircle, MessageCircle, Copy, ImageIcon,
+  Share2, Loader2, AlertCircle, MessageCircle, Copy, ImageIcon, Save,
 } from "lucide-react";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -126,6 +126,7 @@ export function InvoiceActions({ offscreenRef }: Props) {
   const { invoice, save, isDirty, saveError } = useInvoice();
   const router = useRouter();
 
+  const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
   const [imageCopied, setImageCopied] = useState(false);
   const [linkOpen, setLinkOpen] = useState(false);
@@ -310,6 +311,19 @@ export function InvoiceActions({ offscreenRef }: Props) {
             {saveError ?? pdfError}
           </span>
         )}
+
+        <Button
+          size="sm"
+          onClick={() => {
+            save();
+            setSaved(true);
+            setTimeout(() => setSaved(false), 2000);
+          }}
+          className="gap-1.5"
+        >
+          {saved ? <Check size={14} /> : <Save size={14} />}
+          {saved ? "Saved!" : "Save"}
+        </Button>
 
         <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={anyLoading} className="gap-1.5">
           {pdfLoading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
